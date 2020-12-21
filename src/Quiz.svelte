@@ -1,6 +1,8 @@
 <script>
+    import { fade, blur, fly, slide } from "svelte/transition";
     import Question from "./Question.svelte";
-
+    let activeQuestion = 0;
+    let score = 0;
     let quiz = getQuiz();
 
     async function getQuiz() {
@@ -11,19 +13,45 @@
         return quiz;
     }
 
-    function handleClick() {
+    function nextQuestion() {
+        activeQuestion = activeQuestion + 1;
+    }
+
+    function resetQuiz() {
+        score = 0;
+        activeQuestion = 0;
         quiz = getQuiz();
+    }
+
+    function addToScore() {
+        score = score + 1;
     }
 </script>
 
+<style>
+    .fade-wrapper {
+        position: absolute;
+    }
+</style>
+
 <div>
-    <button on:click={handleClick}>Get questions</button>
+    <button on:click={resetQuiz}>Get New Quiz</button>
+
+    <h3>My score: {score}</h3>
+    <h4>Question #{activeQuestion + 1}</h4>
 
     {#await quiz}
         Loading.....
     {:then data}
-        {#each data.results as quest}
-            <Question {quest} />
+        {#each data.results as quest, i}
+            {#if i === activeQuestion}
+                <div
+                    in:fly={{ x: 100 }}
+                    out:fly={{ x: -200 }}
+                    class="fade-wrapper">
+                    <Question {addToScore} {nextQuestion} {quest} />
+                </div>
+            {/if}
         {/each}
     {/await}
 </div>
