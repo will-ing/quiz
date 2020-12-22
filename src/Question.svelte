@@ -1,7 +1,7 @@
 <script>
+    import { score } from "./store.js";
     export let quest;
     export let nextQuestion;
-    export let addToScore;
 
     let isCorrect;
     let isAnswered = false;
@@ -30,7 +30,7 @@
         isAnswered = true;
         isCorrect = check;
         if (check) {
-            addToScore();
+            score.update((val) => val + 1);
         }
         // }
     };
@@ -38,11 +38,20 @@
     shuffle(allAnswers);
 </script>
 
+<style>
+    h5.isCorrect {
+        color: green;
+    }
+    h5.wrong {
+        color: red;
+    }
+</style>
+
 <h3>
     {@html quest.question}
 </h3>
 {#if isAnswered}
-    <h5>
+    <h5 class:isCorrect class:wrong={!isCorrect}>
         {#if isCorrect}You got it right{:else}Wrong!{/if}
     </h5>
 {/if}
